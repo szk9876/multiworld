@@ -479,6 +479,30 @@ class Point2DWallEnv(Point2DEnv):
                     self.inner_wall_max_dist,
                 )
             ]
+        if wall_shape == 'maze':
+            self.walls = [
+                VerticalWall(
+                    min_dist=self.ball_radius,
+                    x_pos=-5,
+                    bottom_y=-9.5,
+                    top_y=-2,
+                    thickness=0.5
+                ),
+                VerticalWall(
+                    min_dist=self.ball_radius,
+                    x_pos=-5,
+                    bottom_y=2,
+                    top_y=7,
+                    thickness=0.5
+                ),
+                HorizontalWall(
+                    min_dist=self.ball_radius,
+                    y_pos=-5,
+                    left_x=0,
+                    right_x=6,
+                    thickness=0.5
+                )
+            ]
 
 
 if __name__ == "__main__":

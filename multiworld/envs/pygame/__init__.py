@@ -41,6 +41,27 @@ def register_custom_envs():
             'render_onscreen': True,
         },
     )
+    register(
+        id='Point2DWalls-corner-v0',
+        entry_point='multiworld.envs.pygame.point2d:Point2DWallEnv',
+        tags={
+            'author': 'Kyle'
+        },
+        kwargs={
+            'wall_shape': 'maze',
+            'initial_position': (-8, -8),
+            'images_are_rgb': True,
+            'target_radius': 0,
+            'ball_radius': 0.25,
+            'render_onscreen': False,
+            'fixed_goal': False,
+            'randomize_position_on_reset': False,
+            'render_size': 84,
+            'boundary_dist': 10,
+            'action_limit': 1.0,
+            'show_goal': False
+        }
+    )
 
 
 register_custom_envs()
