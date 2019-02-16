@@ -62,6 +62,26 @@ def register_custom_envs():
             'show_goal': False
         }
     )
+    register(
+        id='Point2D-center-v0',
+        entry_point='multiworld.envs.pygame.point2d:Point2DEnv',
+        tags={
+            'author': 'Kyle'
+        },
+        kwargs={
+            'initial_position': (0, 0),
+            'images_are_rgb': True,
+            'target_radius': 0,
+            'ball_radius': 0.25,
+            'render_onscreen': False,
+            'fixed_goal': False,
+            'randomize_position_on_reset': False,
+            'render_size': 84,
+            'boundary_dist': 10,
+            'action_limit': 1.0,
+            'show_goal': False
+        }
+    )
 
 
 register_custom_envs()
