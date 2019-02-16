@@ -35,6 +35,7 @@ class Point2DEnv(MultitaskEnv, Serializable):
             randomize_position_on_reset=True,
             images_are_rgb=False,  # else black and white
             show_goal=True,
+            initial_position=(0, 0),
             **kwargs
     ):
         if walls is None:
@@ -78,6 +79,7 @@ class Point2DEnv(MultitaskEnv, Serializable):
             ('state_achieved_goal', self.obs_range),
         ])
 
+        self.initial_position = initial_position
         self.drawer = None
 
     def step(self, velocities):
@@ -124,6 +126,8 @@ class Point2DEnv(MultitaskEnv, Serializable):
             self._position = np.random.uniform(
                 size=2, low=-self.boundary_dist, high=self.boundary_dist
             )
+        else:
+            self._position = np.array(self.initial_position)
         return self._get_obs()
 
     def _position_inside_wall(self, pos):
