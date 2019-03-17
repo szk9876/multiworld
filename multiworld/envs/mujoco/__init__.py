@@ -15,6 +15,18 @@ def register_custom_envs():
 
     LOGGER.info("Registering multiworld mujoco gym environments")
 
+    register(
+        id='HalfCheetahEnv-v0',
+        entry_point='multiworld.envs.mujoco.classic_mujoco.half_cheetah:HalfCheetahEnv',
+        kwargs={
+            'action_scale': 1,
+            'frame_skip': 5,
+            'reward_type': 'vel_distance',
+            'fix_goal': False,
+            'max_speed': 6
+        }
+    )
+
     """
     Reaching tasks
     """

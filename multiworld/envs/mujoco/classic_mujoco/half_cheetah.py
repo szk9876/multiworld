@@ -35,7 +35,9 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
             ('state_desired_goal', self.goal_space),
             ('state_achieved_goal', self.achieved_goal_space),
         ])
+        self.velocity = np.zeros(1)
         self.reset()
+
 
     @property
     def model_name(self):
@@ -43,7 +45,10 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
 
     def step(self, action):
         action = action * self.action_scale
+        xposbefore = self.sim.data.qpos[0]
         self.do_simulation(action, self.frame_skip)
+        xposafter = self.sim.data.qpos[0]
+        self.velocity = (xposafter - xposbefore)/self.dt
         ob = self._get_obs()
         info = self._get_info()
         reward = self.compute_reward(action, ob)
@@ -55,9 +60,11 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
             self.sim.data.qpos.flat[1:],
             self.sim.data.qvel.flat,
         ])
+    
     def _get_obs(self):
         state_obs = self._get_env_obs()
-        achieved_goal = state_obs[8]
+        # achieved_goal = state_obs[8]  # instantaneous velocity \neq average velocity
+        achieved_goal = self.velocity
         return dict(
             observation=state_obs,
             desired_goal=self._state_goal,
@@ -101,6 +108,7 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
 
     def reset(self):
         self.reset_model()
+        self.velocity = np.zeros(1)
         goal = self.sample_goal()
         self._state_goal = goal['state_desired_goal']
         return self._get_obs()

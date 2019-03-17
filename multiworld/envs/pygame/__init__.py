@@ -77,7 +77,7 @@ def register_custom_envs():
             'fixed_goal': False,
             'randomize_position_on_reset': False,
             'render_size': 84,
-            'boundary_dist': 10,
+            'boundary_dist': 100,
             'action_limit': 1.0,
             'show_goal': False
         }
