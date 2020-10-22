@@ -38,6 +38,15 @@ class Point2DEnv(MultitaskEnv, Serializable):
             initial_position=(0, 0),
             **kwargs
     ):
+        # Override arguments.
+        # reward_type = "dense"
+        # target_radius = 0.5
+        # boundary_dist = 4
+        # ball_radius = 0.25
+        # randomize_position_on_reset = False
+        # show_goal = False
+        # initial_position = (0, 0)
+        
         if walls is None:
             walls = []
         if len(kwargs) > 0:
@@ -83,22 +92,28 @@ class Point2DEnv(MultitaskEnv, Serializable):
         self.drawer = None
 
     def step(self, velocities):
-        velocities = np.clip(velocities, a_min=-1, a_max=1)
-        new_position = self._position + velocities
-        for wall in self.walls:
-            new_position = wall.handle_collision(
-                self._position, new_position
-            )
-        self._position = new_position
-        self._position = np.clip(
-            self._position,
-            a_min=-self.boundary_dist,
-            a_max=self.boundary_dist,
+        current_distance_to_target = np.linalg.norm(
+            self._position - self._target_position
         )
+        if current_distance_to_target <= self.target_radius:
+            new_position = self._position
+        else:
+            velocities = np.clip(velocities, a_min=-1, a_max=1)
+            new_position = self._position + velocities
+            for wall in self.walls:
+                new_position = wall.handle_collision(
+                    self._position, new_position
+                )
+            self._position = new_position
+            self._position = np.clip(
+                self._position,
+                a_min=-self.boundary_dist,
+                a_max=self.boundary_dist,
+            )
         distance_to_target = np.linalg.norm(
             self._position - self._target_position
         )
-        is_success = distance_to_target < self.target_radius
+        is_success = distance_to_target <= self.target_radius
 
         ob = self._get_obs()
         reward = self.compute_reward(velocities, ob)
@@ -110,7 +125,12 @@ class Point2DEnv(MultitaskEnv, Serializable):
             'speed': np.linalg.norm(velocities),
             'is_success': is_success,
         }
-        done = False
+        # done = False
+        done = is_success
+        if done:
+            print(self._position)
+            print(distance_to_target)
+            print(self.target_radius)
         return ob, reward, done, info
 
     def _sample_goal(self):
@@ -119,9 +139,11 @@ class Point2DEnv(MultitaskEnv, Serializable):
         )
 
     def reset(self):
-        self._target_position = np.random.uniform(
-            size=2, low=-self.max_target_distance, high=self.max_target_distance
-        )
+        # self._target_position = np.random.uniform(
+        #     size=2, low=-self.max_target_distance, high=self.max_target_distance
+        # )
+        # self._target_position = np.array([self.max_target_distance, self.max_target_distance]) 
+        self._target_position = np.array([self.fixed_goal])
         if self.randomize_position_on_reset:
             self._position = np.random.uniform(
                 size=2, low=-self.boundary_dist, high=self.boundary_dist

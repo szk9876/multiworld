@@ -84,4 +84,48 @@ def register_custom_envs():
     )
 
 
+    register(
+        id='Point2D-center-v2',
+        entry_point='multiworld.envs.pygame.point2d:Point2DEnv',
+        tags={
+            'author': 'Saurabh'
+        },
+        kwargs={
+            'initial_position': (0, 0),
+            'images_are_rgb': True,
+            'target_radius': 0.5,
+            'ball_radius': 0.25,
+            'render_onscreen': False,
+            'fixed_goal': (3.5, 3.5),
+            'randomize_position_on_reset': False,
+            'render_size': 84,
+            'boundary_dist': 4,
+            'action_limit': 1.0,
+            'show_goal': False
+        }
+    )
+
+    register(
+        id='Point2DWalls-corner-v2',
+        entry_point='multiworld.envs.pygame.point2d:Point2DWallEnv',
+        tags={
+            'author': 'Saurabh'
+        },
+        kwargs={
+            'wall_shape': '--',
+            'initial_position': (0, -4),
+            'images_are_rgb': True,
+            'target_radius': 0.5,
+            'ball_radius': 0.25,
+            'render_onscreen': False,
+            'fixed_goal': (0, 3.5),
+            'randomize_position_on_reset': False,
+            'render_size': 84,
+            'boundary_dist': 4,
+            'action_limit': 1.0,
+            'show_goal': False
+        }
+    )
+
+
 register_custom_envs()

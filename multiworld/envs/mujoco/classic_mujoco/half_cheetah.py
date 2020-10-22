@@ -15,6 +15,7 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
         bounds = self.model.actuator_ctrlrange.copy()
         low = bounds[:, 0]
         high = bounds[:, 1]
+        import pdb; pdb.set_trace()
         self.action_space = Box(low=low, high=high)
         self.reward_type = reward_type
         self.indicator_threshold=indicator_threshold
@@ -52,6 +53,7 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
         ob = self._get_obs()
         info = self._get_info()
         reward = self.compute_reward(action, ob)
+        # reward = 0.
         done = False
         return ob, reward, done, info
 
@@ -64,7 +66,7 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
     def _get_obs(self):
         state_obs = self._get_env_obs()
         # achieved_goal = state_obs[8]  # instantaneous velocity \neq average velocity
-        achieved_goal = self.velocity
+        achieved_goal = np.array([self.velocity])
         return dict(
             observation=state_obs,
             desired_goal=self._state_goal,
@@ -84,11 +86,11 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
         info['vel_difference'] =np.abs(xvel - desired_xvel)
         info['vel_success'] = (xvel_error < self.indicator_threshold).astype(float)
         return info
-
+    
     def compute_rewards(self, actions, obs):
         achieved_goals = obs['achieved_goal']
         desired_goals = obs['desired_goal']
-        distances = np.linalg.norm(achieved_goals - desired_goals, axis=1)
+        distances = np.linalg.norm(achieved_goals - desired_goals, axis=-1)
         if self.reward_type == 'vel_distance':
             r = -distances
         elif self.reward_type == 'vel_success':
@@ -110,7 +112,8 @@ class HalfCheetahEnv(MujocoEnv, MultitaskEnv, Serializable):
         self.reset_model()
         self.velocity = np.zeros(1)
         goal = self.sample_goal()
-        self._state_goal = goal['state_desired_goal']
+        # self._state_goal = goal['state_desired_goal']
+        self._state_goal = np.array([1.])
         return self._get_obs()
 
     def get_diagnostics(self, paths, prefix=''):
